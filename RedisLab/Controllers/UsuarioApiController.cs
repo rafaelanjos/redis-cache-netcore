@@ -35,5 +35,11 @@ namespace RedisLab.Controllers
                 return StatusCode(500, "Opss, alguma coisa deu errado!");
             }
         }
+
+        [HttpGet]
+        public ActionResult Index()
+        {
+            return Ok(_usuarioRepository.GetUsuarios());
+        }
     }
 }

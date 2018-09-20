@@ -43,7 +43,7 @@ namespace RedisLab.Services
             {
                 //Value do redis suporta 500mb
                 usuarios = _usuarioRepository.GetUsuarios();
-                _cache.SetObject(key, usuarios, TimeSpan.FromMinutes(1));
+                _cache.SetObject(key, usuarios);
             }
             return usuarios;
         }
