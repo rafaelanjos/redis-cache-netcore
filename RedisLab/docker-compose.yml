@@ -4,7 +4,7 @@ services:
     build: ./
     hostname: redisLab
     ports:
-      - "81:44302"
+      - "81:80"
     links:
       - redis:labRedis
     depends_on:
