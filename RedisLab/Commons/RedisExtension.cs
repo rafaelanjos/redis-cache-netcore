@@ -13,13 +13,13 @@ namespace RedisLab.Commons
         /// <param name="o">Value do redis suporta 500mb</param>
         public static void SetObject(this IDistributedCache cache, string key, object o)
         {
-            var json = JsonConvert.SerializeObject(o);
+            var json = JsonConvert.SerializeObject(o, Formatting.None);
             cache.SetString(key, json);
         }
 
         public static void SetObject(this IDistributedCache cache, string key, object o, DistributedCacheEntryOptions options)
         {
-            var json = JsonConvert.SerializeObject(o);
+            var json = JsonConvert.SerializeObject(o, Formatting.None);
             cache.SetString(key, json, options);
         }
 
