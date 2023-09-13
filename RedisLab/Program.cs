@@ -6,6 +6,7 @@ using RedisLab.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
+builder.Services.AddRazorPages();
 
 var sqlCnn = builder.Configuration.GetConnectionString("sqlCnn");
 builder.Services.AddDbContext<LabContext>(o => o.UseSqlServer(sqlCnn));
@@ -29,17 +30,19 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseAuthorization();
+app.UseStaticFiles();
+app.UseRouting();
 
-app.MapControllers();
+//app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-

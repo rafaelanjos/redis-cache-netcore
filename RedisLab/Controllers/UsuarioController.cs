@@ -9,6 +9,8 @@ using RedisLab.Services;
 
 namespace RedisLab.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [Controller]
     public class UsuarioController : Controller
     {
         private readonly IUsuarioRepository _usuarioRepository;
