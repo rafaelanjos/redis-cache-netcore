@@ -1,24 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using RedisLab.Services;
 
-namespace RedisLab
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+var sqlCnn = builder.Configuration.GetConnectionString("sqlCnn");
+builder.Services.AddDbContext<LabContext>(o => o.UseSqlServer(sqlCnn));
+
+var redisCnn = builder.Configuration.GetConnectionString("redisCnn");
+builder.Services.AddStackExchangeRedisCache(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+    options.Configuration = redisCnn;
+    options.InstanceName = "RedisLab";
+});
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
-    }
+//builder.Services.AddScoped<IUsuarioRepository, UsuarioSqlRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRedisRepository>(x =>
+        new UsuarioRedisRepository(x.GetService<IDistributedCache>(),
+            new UsuarioSqlRepository(x.GetService<LabContext>())
+        )
+    );
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
+
+
